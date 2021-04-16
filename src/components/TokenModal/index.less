@@ -18,8 +18,6 @@
 
     .ant-modal-body {
       color: white;
-      height: 420px;
-      overflow: auto;
       padding: 12px 24px;
     }
 
@@ -61,6 +59,8 @@
 }
 
 .token-list {
+  height: 340px;
+  overflow: auto;
   list-style: none;
   padding: 0px;
 }
@@ -69,9 +69,26 @@
   font-size: 1.2rem;
   padding: 12px 10px;
   border-radius: 4px;
+  line-height: 24px;
 
   &:hover {
     background-color: #2e3249;
     cursor: pointer;
+  }
+}
+
+.token-selected {
+  background-color: #26375b;
+}
+
+.token-checked {
+  font-size: 1.2rem;
+  color: #00ff0a;
+  line-height: 24px;
+  float: right;
+  margin-right: 6px;
+
+  & > svg {
+    vertical-align: middle;
   }
 }

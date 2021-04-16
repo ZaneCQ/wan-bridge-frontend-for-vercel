@@ -1,74 +1,42 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Modal, message, Skeleton, Input } from 'antd';
-import { useRequest } from 'ahooks';
+import { Modal, message, Input, Empty } from 'antd';
+import { CheckOutlined } from '@ant-design/icons';
+import useTokensModel from '@/models/useTokens';
+import useHotTokensModel from '@/models/useHotTokens';
+import useFormDataModel from '@/models/useFormData';
 import styles from './index.less';
 
 const TokenModal = (props) => {
   const { visible, onOk, onCancel } = props;
-  const [tokens, setTokens] = useState([]);
-  const [hotTokens, setHotTokens] = useState([]);
   const [search, setSearch] = useState('');
-  const [filteredToken, setFilteredToken] = useState([]);
-  /* const { data, error, loading } = useRequest('/api/tokens', {
-        onSuccess: (result) => {
-            console.log('success:', result);
-            if (result) {
-                setTokens(result);
-                // message.success(`Get tokens successfully`);
-            }
-        },
-    });
+  let filteredToken = [];
+  const tokens = useTokensModel();
+  const hotTokens = useHotTokensModel();
+  const formModel = useFormDataModel();
 
-    useRequest('/api/tokens/hot', {
-        onSuccess: (result) => {
-            console.log('hot success:', result);
-            if (result) {
-                setHotTokens(result);
-                // message.success(`Get hot tokens successfully`);
-            }
-        },
-    });
-
-    useMemo(() => {
-        if (search.length !== 0) {
-            let reg = new RegExp(search, 'ig');
-            setFilteredToken(tokens.filter(token => reg.test(token)));
-        }
-    }, [tokens, search]);
-
-    console.log('tokens:', tokens);
-    console.log('hotTokens:', hotTokens);
-    console.log('search:', search);
-    console.log('filteredToken:', filteredToken); */
-
-  const { data, error, loading } = useRequest('/api/tokens');
-
-  useRequest('/api/tokens/hot', {
-    onSuccess: (result) => {
-      // console.log('hot success:', result);
-      if (result) {
-        setHotTokens(result);
-      }
-    },
-  });
-
-  useMemo(() => {
-    if (search.length !== 0) {
+  filteredToken = useMemo(() => {
+    if (!tokens) {
+      return [];
+    }
+    if (search.length === 0) {
+      return tokens;
+    } else {
       let reg = new RegExp(search, 'ig');
-      setFilteredToken(tokens.filter((token) => reg.test(token)));
+      return tokens.filter((token) => reg.test(token));
     }
   }, [tokens, search]);
-  console.log('----------render-----------');
+
+  // console.log('----------render-----------');
   // console.log('tokens:', tokens);
   // console.log('hotTokens:', hotTokens);
   // console.log('search:', search);
   // console.log('filteredToken:', filteredToken);
-  console.log('data:', data);
+  const selected = formModel.data.asset;
 
   return (
     <Modal
       title="Select Asset"
-      visible={visible}
+      visible={true}
       onOk={onOk}
       onCancel={onCancel}
       closable={false}
@@ -81,6 +49,7 @@ const TokenModal = (props) => {
           setSearch(e.target.value);
         }}
       />
+
       <div className={styles['hot-token-list']}>
         {hotTokens.map((token) => (
           <span className={styles['hot-token-item']} key={token}>
@@ -88,17 +57,31 @@ const TokenModal = (props) => {
           </span>
         ))}
       </div>
-      <ul className={styles['token-list']}>
-        {loading ? (
-          <Skeleton active />
-        ) : (
-          (data || []).map((token) => (
-            <li key={token} className={styles['token-list-item']}>
+
+      {tokens.length === 0 ? (
+        <Empty description={'No tokens available.'} />
+      ) : (
+        <ul className={styles['token-list']}>
+          {filteredToken.map((token) => (
+            <li
+              key={token}
+              className={`${styles['token-list-item']} ${
+                token === selected && styles['token-selected']
+              }`}
+              onClick={() => {
+                console.log('select:', token);
+                formModel.modify({ asset: token });
+                props.onOk();
+              }}
+            >
               {token}
+              {token === selected && (
+                <CheckOutlined className={styles['token-checked']} />
+              )}
             </li>
-          ))
-        )}
-      </ul>
+          ))}
+        </ul>
+      )}
     </Modal>
   );
 };

@@ -1,25 +1,38 @@
 import { useState, useEffect } from 'react';
 import { Form, Input, Button, Tooltip, Modal, message } from 'antd';
-import { useRequest } from 'ahooks';
 import {
   RightOutlined,
   SwapOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
+import TokenModal from 'components/TokenModal';
+import useTokensModel from '@/models/useTokens';
+import useFormDataModel from '@/models/useFormData';
 import wan from 'images/wan.png';
 import styles from './index.less';
-import TokenModal from 'components/TokenModal';
-
-const { Item } = Form;
 
 export default function IndexPage() {
-  const [asset, setAsset] = useState('USDC');
-  const [toDisabled, setToDisabled] = useState(true);
+  // const [asset, setAsset] = useState('USDC');
   const [amount, setAmount] = useState('');
-  const [assetModalVisible, setAssetModalVisible] = useState(true);
+  const [toDisabled, setToDisabled] = useState(true);
+  const [assetModalVisible, setAssetModalVisible] = useState(false);
+  const tokens = useTokensModel();
+  const formModel = useFormDataModel();
+
+  const { data, modify } = formModel;
+  // console.log('tokens:', tokens);
+  // console.log('formModel:', formModel);
+  console.log('data:', data);
+
   const amountChange = (e) => {
     setAmount(e.target.value);
   };
+
+  useEffect(() => {
+    modify({
+      asset: tokens[0],
+    });
+  }, [tokens]);
 
   return (
     <div className={styles['main-container']}>
@@ -36,12 +49,15 @@ export default function IndexPage() {
           <div className={styles['fake-input-icon']}>
             <img src={wan} />
           </div>
-          <div className={styles['fake-input-text']}>{asset}</div>
+          <div className={styles['fake-input-text']}>{data.asset}</div>
           <RightOutlined style={{ color: '#ffffff' }} />
         </div>
+
         <div className={styles['chain-pair-wrapper']}>
           <div className={styles['chain-item']}>
-            <div className={styles['chain-label']}>From</div>
+            <div className={styles['chain-label']}>
+              {data.from ? data.from : 'From'}
+            </div>
             <div className={styles['chain-box']}>
               <img src={wan} />
               <p>{'From'}</p>
@@ -57,7 +73,9 @@ export default function IndexPage() {
           </div>
 
           <div className={styles['chain-item']}>
-            <div className={styles['chain-label']}>To</div>
+            <div className={styles['chain-label']}>
+              {data.to ? data.to : 'To'}
+            </div>
             <div
               className={`${styles['chain-box']} ${
                 toDisabled && styles['chain-box-disabled']
@@ -76,9 +94,9 @@ export default function IndexPage() {
         <div className={styles['amount-wrapper']}>
           <div className={styles['amount-label']}>Amount</div>
           <div className={styles['amount-input-wrapper']}>
-            <Input onChange={amountChange} />
+            <Input onChange={amountChange} defaultValue={data.amount} />
           </div>
-          {amount.length === 0 && (
+          {data.amount.length === 0 && (
             <p className={styles['error-text']}>{'Amount is required.'}</p>
           )}
           <div className={styles['fee-wrapper']}>
@@ -89,8 +107,9 @@ export default function IndexPage() {
               </Tooltip>
             </p>
             <p>
-              0.012 <img src={wan} />
-              USDC
+              {data.fee}
+              <img src={wan} />
+              {data.asset}
             </p>
           </div>
         </div>
@@ -98,15 +117,22 @@ export default function IndexPage() {
         <Button className={styles['next-button']}>Next</Button>
       </div>
 
-      <TokenModal
-        visible={assetModalVisible}
-        onOk={() => {
+      {assetModalVisible && (
+        <TokenModal
+          // visible={assetModalVisible}
+          onOk={() => {
+            setAssetModalVisible(false);
+          }}
+          onCancel={() => {
+            setAssetModalVisible(false);
+          }}
+
+          /* onSelect={(token) => {
           setAssetModalVisible(false);
-        }}
-        onCancel={() => {
-          setAssetModalVisible(false);
-        }}
-      />
+
+        }} */
+        />
+      )}
     </div>
   );
 }
