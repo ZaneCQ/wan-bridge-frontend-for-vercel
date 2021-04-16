@@ -1,0 +1,77 @@
+.modal-wrapper {
+  :global {
+    .ant-modal-content {
+      background-color: #171f31;
+    }
+
+    .ant-modal-header {
+      background-color: #171f31;
+      border-bottom: 0px solid rgb(116 116 116);
+      padding-top: 32px;
+    }
+
+    .ant-modal-title {
+      color: white;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .ant-modal-body {
+      color: white;
+      height: 420px;
+      overflow: auto;
+      padding: 12px 24px;
+    }
+
+    .ant-modal-footer {
+      border-top: none;
+    }
+  }
+}
+
+.search-input {
+  background-color: #424242;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  line-height: 2.4rem;
+}
+
+.hot-token-list {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 10px 0px 4px 0px;
+  font-size: 0.8rem;
+  color: #6495ed;
+}
+
+.hot-token-item {
+  display: inline-block;
+  border: 1px solid #3f51b5;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin: 0px 4px;
+
+  &:hover {
+    cursor: pointer;
+    filter: brightness(1.5);
+  }
+}
+
+.token-list {
+  list-style: none;
+  padding: 0px;
+}
+
+.token-list-item {
+  font-size: 1.2rem;
+  padding: 12px 10px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #2e3249;
+    cursor: pointer;
+  }
+}
