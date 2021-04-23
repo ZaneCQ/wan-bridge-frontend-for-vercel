@@ -69,7 +69,7 @@ export default function IndexPage() {
     // console.log('Form next:', data);
     console.log('wallet:', wallet);
     // connect2Wallet();
-    history.push('/confirmation');
+    history.push('/confirm');
   };
 
   const connect2Wallet = async () => {
@@ -111,7 +111,7 @@ export default function IndexPage() {
   }, [data.from]);
 
   return (
-    <div className={styles['main-container']}>
+    <>
       <div className={styles['form-wrapper']}>
         <div className={styles['title']}>WAN Bridge</div>
 
@@ -141,8 +141,8 @@ export default function IndexPage() {
               }}
             >
               <img src={getChainLogo(data.from)} />
-              <p className="label">{data.from ? data.from : 'From'}</p>
-              <p className="label">{'Network'}</p>
+              <p /* className="label" */>{data.from ? data.from : 'From'}</p>
+              <p /* className="label" */>{'Network'}</p>
               <div className={styles['chain-box-arrow']}>
                 <RightOutlined style={{ color: '#ffffff', fontSize: '16px' }} />
               </div>
@@ -260,6 +260,6 @@ export default function IndexPage() {
           isFrom={networkModalVisible === FROM}
         />
       )}
-    </div>
+    </>
   );
 }

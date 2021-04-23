@@ -33,7 +33,7 @@ const NetworkModal = (props) => {
       closable={true}
       footer={null}
       wrapClassName={styles['modal-wrapper']}
-      width={320}
+      width={520}
     >
       <div className={styles['chain-wrapper']}>
         {filteredNet.length === 0 ? (
@@ -52,7 +52,7 @@ const NetworkModal = (props) => {
                   src={getChainLogo(chain)}
                   className={styles['chain-logo']}
                 />
-                <span className={styles['chain-name']}>{chain}</span>
+                {chain}
                 {chain === selected && (
                   <CheckOutlined className={styles['chain-checked']} />
                 )}

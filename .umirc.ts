@@ -20,7 +20,7 @@ export default defineConfig({
       path: '/',
       component: '@/pages/index',
       routes: [
-        { path: '/send', component: 'SendingForm' },
+        { path: '/', component: 'SendingForm' },
         { path: '/confirm', component: 'Confirmation' },
       ],
     },
