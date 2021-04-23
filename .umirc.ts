@@ -9,11 +9,20 @@ export default defineConfig({
     type: 'none',
   },
   history: { type: 'hash' },
-  routes: [{ path: '/', component: '@/pages/index' }],
   fastRefresh: {},
   alias: {
     images: resolve('./src/assets/images'),
     languages: resolve('./src/assets/locals'),
     components: resolve('./src/components'),
   },
+  routes: [
+    {
+      path: '/',
+      component: '@/pages/index',
+      routes: [
+        { path: '/send', component: 'SendingForm' },
+        { path: '/confirm', component: 'Confirmation' },
+      ],
+    },
+  ],
 });

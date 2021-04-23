@@ -24,6 +24,14 @@
     .ant-modal-footer {
       border-top: none;
     }
+
+    .ant-modal-close {
+      color: rgb(255, 255, 255);
+
+      &:hover {
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
   }
 }
 
@@ -40,7 +48,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  margin: 10px 0px 4px 0px;
+  margin: 8px 0px 8px 0px;
   font-size: 0.8rem;
   color: #6495ed;
 }
@@ -49,13 +57,24 @@
   display: inline-block;
   border: 1px solid #3f51b5;
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 0px 6px;
   margin: 0px 4px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 1rem;
 
   &:hover {
     cursor: pointer;
     filter: brightness(1.5);
   }
+}
+
+.hot-token-checked {
+  font-size: 1rem;
+  color: #00ff0a;
+  line-height: 22px;
+  vertical-align: middle;
+  margin-left: 4px;
 }
 
 .token-list {
@@ -75,6 +94,14 @@
     background-color: #2e3249;
     cursor: pointer;
   }
+}
+
+.token-logo {
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+  margin-right: 8px;
+  border-radius: 50%;
 }
 
 .token-selected {

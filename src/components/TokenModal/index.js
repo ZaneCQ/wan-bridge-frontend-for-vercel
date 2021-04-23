@@ -4,15 +4,18 @@ import { CheckOutlined } from '@ant-design/icons';
 import useTokensModel from '@/models/useTokens';
 import useHotTokensModel from '@/models/useHotTokens';
 import useFormDataModel from '@/models/useFormData';
+import useCrossChainModel from '@/models/useCrossChain';
 import styles from './index.less';
 
 const TokenModal = (props) => {
-  const { visible, onOk, onCancel } = props;
+  const { onOk } = props;
   const [search, setSearch] = useState('');
   let filteredToken = [];
   const tokens = useTokensModel();
   const hotTokens = useHotTokensModel();
-  const formModel = useFormDataModel();
+  const { data, modify } = useFormDataModel();
+  const { getTokenLogo } = useCrossChainModel();
+  const selected = data.asset;
 
   filteredToken = useMemo(() => {
     if (!tokens) {
@@ -26,20 +29,27 @@ const TokenModal = (props) => {
     }
   }, [tokens, search]);
 
-  // console.log('----------render-----------');
-  // console.log('tokens:', tokens);
-  // console.log('hotTokens:', hotTokens);
-  // console.log('search:', search);
-  // console.log('filteredToken:', filteredToken);
-  const selected = formModel.data.asset;
+  const onSelect = (token) => {
+    console.log('select:', token);
+    if (token !== selected) {
+      modify({
+        asset: token,
+        from: null,
+        to: null,
+        amount: '0',
+        fee: '0',
+      });
+    }
+    props.onOk();
+  };
 
   return (
     <Modal
       title="Select Asset"
       visible={true}
-      onOk={onOk}
-      onCancel={onCancel}
-      closable={false}
+      onCancel={onOk}
+      closable={true}
+      footer={null}
       wrapClassName={styles['modal-wrapper']}
     >
       <Input
@@ -52,8 +62,15 @@ const TokenModal = (props) => {
 
       <div className={styles['hot-token-list']}>
         {hotTokens.map((token) => (
-          <span className={styles['hot-token-item']} key={token}>
+          <span
+            className={styles['hot-token-item']}
+            key={token}
+            onClick={() => onSelect(token)}
+          >
             {token}
+            {token === selected && (
+              <CheckOutlined className={styles['hot-token-checked']} />
+            )}
           </span>
         ))}
       </div>
@@ -68,12 +85,9 @@ const TokenModal = (props) => {
               className={`${styles['token-list-item']} ${
                 token === selected && styles['token-selected']
               }`}
-              onClick={() => {
-                console.log('select:', token);
-                formModel.modify({ asset: token });
-                props.onOk();
-              }}
+              onClick={() => onSelect(token)}
             >
+              <img src={getTokenLogo(token)} className={styles['token-logo']} />
               {token}
               {token === selected && (
                 <CheckOutlined className={styles['token-checked']} />

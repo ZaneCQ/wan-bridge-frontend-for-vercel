@@ -5,6 +5,8 @@ const initialFormData = {
   asset: null,
   from: null,
   to: null,
+  fromAddress: undefined,
+  toAddress: undefined,
   amount: '0',
   fee: '0',
 };

@@ -86,6 +86,12 @@ export default function IndexPage() {
     });
   };
 
+  /* useEffect(() => {
+    if (!!data.from && !!data.to && checkAmount(data.amount)) {
+
+    }
+  }, [data.asset, data.from, data.to, data.amount, data.toAddress]); */
+
   useEffect(() => {
     console.log('Effect address:', wallet.address);
   }, [wallet.address]);

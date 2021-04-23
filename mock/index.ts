@@ -1,3 +1,25 @@
+const tokens = {
+  WAN: ['Wanchain', 'Ethereum'],
+  ETH: ['Wanchain', 'Ethereum'],
+  BTC: ['Bitcoin', 'Wanchain', 'Ethereum'],
+  Link: ['Wanchain', 'Ethereum'],
+  FNX: ['Wanchain', 'Ethereum'],
+  USDT: ['Wanchain', 'Ethereum'],
+  USDC: ['Wanchain', 'Ethereum'],
+  BUSD: ['Wanchain', 'Ethereum'],
+  MKR: ['Wanchain', 'Ethereum'],
+  XRP: ['Wanchain', 'Ethereum'],
+  ZXC: ['Wanchain', 'Ethereum'],
+  TUSD: ['Wanchain', 'Ethereum'],
+  GUSD: ['Wanchain', 'Ethereum'],
+  EURS: ['Wanchain', 'Ethereum'],
+  UNI: ['Wanchain', 'Ethereum'],
+  SWAP: ['Wanchain', 'Ethereum'],
+  ZCN: ['Wanchain', 'Ethereum'],
+  VIBE: ['Wanchain', 'Ethereum'],
+  OCEAN: ['Wanchain', 'Ethereum'],
+};
+
 export default {
   /* // 支持值为 Object 和 Array
     'GET /api/users': { users: [1, 2] },
@@ -12,25 +34,7 @@ export default {
         res.end('ok');
     }, */
 
-  '/api/tokens': [
-    'WAN',
-    'BTC',
-    'ETH',
-    'Link',
-    'FNX',
-    'USDT',
-    'USDC',
-    'BUSD',
-    'MKR',
-    'XRP',
-    'ZXC',
-    'TUSD',
-    'GUSD',
-    'EURS',
-    'UNI',
-    'SWAP',
-    'ZCN',
-    'VIBE',
-  ],
+  '/api/tokens': Object.keys(tokens),
   '/api/tokens/hot': ['WAN', 'BTC', 'ETH', 'FNX', 'USDT'],
+  '/api/tokens/cross-chain': tokens,
 };
