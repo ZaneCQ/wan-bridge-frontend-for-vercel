@@ -3,18 +3,24 @@ import { createModel } from 'hox';
 
 const useTokens = () => {
   const [tokens, setTokens] = useState([]);
-  useEffect(() => {
+  const [loading, setLoading] = useState(false);
+  const getTokens = () => {
+    setLoading(true);
     fetch('/api/tokens')
       .then((res) => res.json())
       .then((res) => {
-        // console.log('##### tokens:', res);
+        console.log('##### tokens:', res);
         setTokens(res);
+        setLoading(false);
       })
       .catch((err) => {
         console.log('failed to fetch tokens:', err);
+        setLoading(false);
       });
-  }, []);
-  return tokens;
+  };
+  useEffect(getTokens, []);
+
+  return { tokens, getTokens, loading };
 };
 
 export default createModel(useTokens);

@@ -11,7 +11,7 @@ const TokenModal = (props) => {
   const { onOk } = props;
   const [search, setSearch] = useState('');
   let filteredToken = [];
-  const tokens = useTokensModel();
+  const { tokens } = useTokensModel();
   const hotTokens = useHotTokensModel();
   const { data, modify } = useFormDataModel();
   const { getTokenLogo } = useCrossChainModel();
@@ -30,7 +30,7 @@ const TokenModal = (props) => {
   }, [tokens, search]);
 
   const onSelect = (token) => {
-    console.log('select:', token);
+    // console.log('select:', token, selected);
     if (token !== selected) {
       modify({
         asset: token,

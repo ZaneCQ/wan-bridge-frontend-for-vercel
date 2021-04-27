@@ -3,9 +3,8 @@ import { isValidChecksumAddress } from 'ethereumjs-util';
 import { isValidChecksumAddress as isWanValidChecksumAddress } from 'wanchainjs-util';
 
 export const isAddress = (address, chain) => {
-  // console.log(`isAddress ${address} ${chain}`)
   if (!address || address.length < 34) {
-    console.log(`length < 34`);
+    // console.log(`length < 34`);
     return false;
   }
   if (chain === 'Ethereum' || chain === 'BSC') {
@@ -59,4 +58,14 @@ export const checkNumber = (num) => {
   const reg1 = /^[0-9]+$/;
   const reg2 = /^[0-9]+\.[0-9]+$/;
   return reg1.test(num) || reg2.test(num);
+};
+
+export const clipString = (str, len) => {
+  if (typeof str !== 'string' || typeof len !== 'number') return str;
+  if (str.length <= len) return str;
+  let text = '';
+  let preLen = parseInt(len / 2);
+  let sufLen = len - preLen;
+  text = str.substr(0, preLen) + '...' + str.substr(-sufLen);
+  return text;
 };

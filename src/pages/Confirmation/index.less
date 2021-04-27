@@ -94,6 +94,10 @@
     flex: 1;
     text-align: center;
   }
+
+  & > * {
+    line-height: 28px;
+  }
 }
 
 .copy-icon {
@@ -103,6 +107,10 @@
   &:hover {
     cursor: pointer;
     filter: brightness(1.2);
+  }
+
+  & > svg {
+    vertical-align: middle;
   }
 }
 
@@ -152,6 +160,7 @@
 
     &:hover {
       cursor: pointer;
+      filter: brightness(1.4);
     }
 
     &:active {
@@ -166,4 +175,28 @@
 
 .ok {
   background: linear-gradient(133deg, #2fd8ca, #19a2bd) !important;
+}
+
+.loading-wrapper {
+  & > div {
+    width: 320px !important;
+    top: calc(50% - 120px);
+    padding: 0px;
+  }
+
+  :global {
+    .ant-modal-content {
+      height: 240px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+.loading-text {
+  font-size: 24px;
+  color: black;
+  font-weight: 600;
 }

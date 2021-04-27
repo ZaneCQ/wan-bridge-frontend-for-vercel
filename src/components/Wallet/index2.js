@@ -35,60 +35,44 @@ const getProviderOptions = () => ({
 
 class Wallet {
   constructor() {
-    // console.log('Wallet constructor');
-    this.connected = false;
-    this.address = undefined;
+    console.log('Wallet constructor');
     this.createModal();
-    this.clearCacheWhenWanMaskUninstalled();
-    // console.log('this.web3Modal.cachedProvider:', this.web3Modal.cachedProvider);
-    // this.connect();
+    this.clearChacheWhenWanMaskUninstalled();
+    this.connect();
+    console.log('this:::', this);
+    // this.address = undefined;
+    console.log(
+      'web3Modal.cachedProvider',
+      this.web3Modal.cachedProvider,
+      !!this.web3Modal.cachedProvider,
+    );
   }
 
   createModal = () => {
     this.web3Modal = new Web3Modal({
       network: 'mainnet', // optional
-      cacheProvider: true,
+      cacheProvider: true, // optional
       providerOptions: getProviderOptions(),
     });
   };
 
   connect = async () => {
+    // console.log('wallet connect called~');
     try {
       this.provider = await this.web3Modal.connect();
     } catch (err) {
       console.log('Failed to connect:', err);
-      return false;
+      return;
     }
     console.log('----------');
     await this.subscribeProvider(this.provider);
     this.web3 = new Web3(this.provider);
     const accounts = await this.web3.eth.getAccounts();
-    this.address = accounts[0];
-    this.connected = true;
-    this.networkId = await this.web3.eth.net.getId();
-    console.log('Parameters:', {
-      accounts,
-      address: this.address,
-      networkId: this.networkId,
-    });
-    return true;
-  };
-
-  reset = async () => {
-    console.log('reset:', this.web3);
-    const web3 = this.web3;
-    if (web3 && web3.currentProvider && web3.currentProvider.close) {
-      await web3.currentProvider.close();
-    }
-    await this.web3Modal.clearCachedProvider();
-    this.connected = false;
-    this.address = undefined;
-  };
-
-  clearCacheWhenWanMaskUninstalled = () => {
-    if (this.web3Modal.cachedProvider === 'wanmask' && !window.wanchain) {
-      this.web3Modal.clearCachedProvider();
-    }
+    const address = accounts[0];
+    const networkId = await this.web3.eth.net.getId();
+    console.log('Parameters:', { accounts, address, networkId });
+    // this.address = address;
+    // this.connected = true;
   };
 
   subscribeProvider = async (provider) => {
@@ -111,6 +95,22 @@ class Wallet {
     provider.on('disconnect', (error) => {
       console.log('disconnect:', error);
     });
+  };
+
+  reset = async () => {
+    console.log('reset:', this.web3);
+    const web3 = this.web3;
+    if (web3 && web3.currentProvider && web3.currentProvider.close) {
+      await web3.currentProvider.close();
+    }
+    await this.web3Modal.clearCachedProvider();
+  };
+
+  clearChacheWhenWanMaskUninstalled = () => {
+    if (this.web3Modal.cachedProvider === 'wanmask' && !window.wanchain) {
+      this.web3Modal.clearCachedProvider();
+      return;
+    }
   };
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Input, Button, Tooltip, message } from 'antd';
+import { Input, Button, Tooltip, Spin, Dropdown, Menu, message } from 'antd';
 import { history } from 'umi';
 import {
   RightOutlined,
@@ -13,27 +13,31 @@ import wallet from 'components/Wallet';
 import useCrossChainModel from '@/models/useCrossChain';
 import useTokensModel from '@/models/useTokens';
 import useFormDataModel from '@/models/useFormData';
-import { isAddress, checkNumber } from '@/utils/utils';
+import { isAddress, checkNumber, clipString } from '@/utils/utils';
 import styles from './index.less';
 
 const FALSE = 0;
 const FROM = 1;
 const TO = 2;
-// console.log('wallet:', wallet);
 
 export default function IndexPage() {
-  console.log('Render Index page.');
   const [toDisabled, setToDisabled] = useState(true);
   const [validAddress, setValidAddress] = useState(true);
   const [validAmount, setValidAmount] = useState(true);
   const [assetModalVisible, setAssetModalVisible] = useState(false);
-  const [need2Connect2Wallet, setNeed2Connect2Wallet] = useState(false);
+  const [need2Connect2Wallet, setNeed2Connect2Wallet] = useState(true);
   const [networkModalVisible, setNetworkModalVisible] = useState(0); // false: 0, 'from': 1, 'to': 2
 
-  const tokens = useTokensModel();
+  const { tokens } = useTokensModel();
   const { data, modify } = useFormDataModel();
-  const { getTokenLogo, getChainLogo } = useCrossChainModel();
+  const {
+    getSupportedChainByToken,
+    getTokenLogo,
+    getChainLogo,
+    chains,
+  } = useCrossChainModel();
   const balance = 10;
+
   const checkAddress = (value) => {
     if (isAddress(value, data.to)) {
       setValidAddress(true);
@@ -66,16 +70,9 @@ export default function IndexPage() {
   };
 
   const onNext = () => {
-    // console.log('Form next:', data);
+    console.log('Form next:', data);
     console.log('wallet:', wallet);
-    // connect2Wallet();
     history.push('/confirm');
-  };
-
-  const connect2Wallet = async () => {
-    if (wallet !== null) {
-      wallet.reset().then(wallet.connect);
-    }
   };
 
   const onExchange = () => {
@@ -93,16 +90,6 @@ export default function IndexPage() {
   }, [data.asset, data.from, data.to, data.amount, data.toAddress]); */
 
   useEffect(() => {
-    console.log('Effect address:', wallet.address);
-  }, [wallet.address]);
-
-  useEffect(() => {
-    modify({
-      asset: tokens[0],
-    });
-  }, [tokens]);
-
-  useEffect(() => {
     if (data.from !== null) {
       setToDisabled(false);
     } else {
@@ -110,10 +97,97 @@ export default function IndexPage() {
     }
   }, [data.from]);
 
+  // Initialize form data.
+  useEffect(() => {
+    let supportedChains = getSupportedChainByToken(tokens[0]);
+    const timer = setTimeout(() => {
+      modify({
+        asset: tokens[0],
+        from: supportedChains[0],
+        to: supportedChains[1],
+      });
+    });
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [tokens, chains]);
+
+  useEffect(() => {
+    connect();
+  }, []);
+
+  const connect = () => {
+    if (wallet !== null) {
+      wallet
+        .connect()
+        .then((connected) => {
+          console.log('connected:', connected);
+          if (connected) {
+            modify({
+              fromAddress: wallet.address,
+            });
+          }
+          setNeed2Connect2Wallet(!connected);
+        })
+        .catch((err) => {
+          // console.log('connect failed:', err);
+          setNeed2Connect2Wallet(true);
+        });
+    }
+  };
+
+  const disconnect = () => {
+    wallet.reset().then(() => {
+      console.log('disconnect:', wallet.address);
+      setNeed2Connect2Wallet(true);
+    });
+  };
+
+  const onConnect2Wallet = () => {
+    if (wallet !== null) {
+      wallet.reset().then(connect);
+    }
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item onClick={disconnect}>
+        <span>Disconnect</span>
+      </Menu.Item>
+      <Menu.Item onClick={onConnect2Wallet}>
+        <span>Switch to other wallet</span>
+      </Menu.Item>
+    </Menu>
+  );
+
+  console.log('render');
+
   return (
     <>
       <div className={styles['form-wrapper']}>
         <div className={styles['title']}>WAN Bridge</div>
+
+        {need2Connect2Wallet ? (
+          <div
+            className={`${styles['connection']} ${styles['connect-to-wallet']}`}
+            onClick={onConnect2Wallet}
+          >
+            Connect to Wallet
+          </div>
+        ) : (
+          <Dropdown
+            overlay={menu}
+            placement="bottomCenter"
+            overlayClassName={styles['wallet-dropdown-wrapper']}
+          >
+            <button
+              className={`${styles['connection']} ${styles['connected-address']}`}
+            >
+              {clipString(data.fromAddress, 14)}
+            </button>
+          </Dropdown>
+        )}
 
         {/* Asset */}
         <div className={`${styles['fake-input-label']} label`}>Asset</div>
@@ -141,8 +215,8 @@ export default function IndexPage() {
               }}
             >
               <img src={getChainLogo(data.from)} />
-              <p /* className="label" */>{data.from ? data.from : 'From'}</p>
-              <p /* className="label" */>{'Network'}</p>
+              <p>{data.from ? data.from : 'From'}</p>
+              <p>{'Network'}</p>
               <div className={styles['chain-box-arrow']}>
                 <RightOutlined style={{ color: '#ffffff', fontSize: '16px' }} />
               </div>
@@ -197,51 +271,47 @@ export default function IndexPage() {
           )}
         </div>
 
-        {/* Amount */}
-        <div className={styles['amount-wrapper']}>
-          <div className={`${styles['amount-label']} label`}>Amount</div>
-          <div className={styles['amount-input-wrapper']}>
-            <Input onChange={amountChange} value={data.amount} />
-          </div>
-          {!validAmount && (
-            <div className={styles['error-text']}>{'Invalid amount.'}</div>
-          )}
-
-          <div className={styles['balance-wrapper']}>
-            <span className={'label'}>Balance:</span>
-            <span className={'value'}>
-              {balance} {data.asset}
-            </span>
-          </div>
-
-          <div className={styles['fee-wrapper']}>
-            <div>
-              <span className={'label'}>Fee</span>
-              <Tooltip title={`Operation Fee: ${data.fee} ${data.asset}`}>
-                <QuestionCircleOutlined />
-              </Tooltip>
+        <Spin
+          spinning={need2Connect2Wallet}
+          wrapperClassName={styles['unconnected-to-wallet-mask']}
+          indicator={<div onClick={onConnect2Wallet}>Connect to Wallet</div>}
+        >
+          {/* Amount */}
+          <div className={styles['amount-wrapper']}>
+            <div className={`${styles['amount-label']} label`}>Amount</div>
+            <div className={styles['amount-input-wrapper']}>
+              <Input onChange={amountChange} value={data.amount} />
             </div>
-            <div>
-              {data.fee}
-              <img src={getTokenLogo(data.asset)} />
-              {data.asset}
+            {!validAmount && (
+              <div className={styles['error-text']}>{'Invalid amount.'}</div>
+            )}
+
+            <div className={styles['balance-wrapper']}>
+              <span className={'label'}>Balance:</span>
+              <span className={'value'}>
+                {balance} {data.asset}
+              </span>
+            </div>
+
+            <div className={styles['fee-wrapper']}>
+              <div>
+                <span className={'label'}>Fee</span>
+                <Tooltip title={`Operation Fee: ${data.fee} ${data.asset}`}>
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </div>
+              <div>
+                {data.fee}
+                <img src={getTokenLogo(data.asset)} />
+                {data.asset}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* {
-          need2Connect2Wallet ? (
-            <Button className={styles['next-button']} onClick={connect2Wallet}>Connect to Wallet</Button>
-          ) : (
-            <Button className={styles['next-button']} onClick={onNext}>Next</Button>
-          )
-        } */}
-        <Button className={styles['next-button']} onClick={connect2Wallet}>
-          Connect to Wallet
-        </Button>
-        <Button className={styles['next-button']} onClick={onNext}>
-          Next
-        </Button>
+          <Button className={styles['next-button']} onClick={onNext}>
+            Next
+          </Button>
+        </Spin>
       </div>
 
       {assetModalVisible && (

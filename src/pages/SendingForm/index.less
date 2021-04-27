@@ -5,6 +5,8 @@
   border-radius: 8px;
   padding: 30px 40px;
   background-color: #171f31;
+  position: relative;
+  overflow: auto;
 
   :global {
     .label {
@@ -19,6 +21,64 @@
   color: white;
   font-size: 2rem;
   font-weight: 600;
+}
+
+.connection {
+  color: white;
+  position: fixed;
+  right: 12px;
+  top: 6px;
+  padding: 6px 10px;
+  width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 6px;
+  font-size: 16px;
+  border: none;
+  text-align: center;
+  line-height: 24px;
+
+  &:hover {
+    filter: brightness(1.2);
+    cursor: pointer;
+  }
+
+  &:active {
+    filter: brightness(1);
+  }
+}
+
+.connect-to-wallet {
+  color: white;
+  background-color: brown;
+}
+
+.connected-address {
+  color: white;
+  background-color: #607d8b;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.wallet-dropdown-wrapper {
+  :global {
+    .ant-dropdown-menu {
+      background-color: #607d8b;
+      border-radius: 6px;
+    }
+
+    .ant-dropdown-menu-item {
+      color: white;
+      font-size: 16px;
+      line-height: 32px;
+
+      &:hover {
+        background-color: #78acc5;
+      }
+    }
+  }
 }
 
 .fake-input-label {
@@ -158,6 +218,7 @@
 
 .address-wrapper {
   display: block;
+  margin-bottom: 20px;
 }
 
 .address-label {
@@ -271,7 +332,6 @@
     img {
       width: 1.2rem;
       margin: 0px 4px 0px 4px;
-      // vertical-align: text-top;
       vertical-align: middle;
     }
   }
@@ -280,8 +340,8 @@
 .next-button {
   width: 100%;
   height: auto;
-  margin-top: 40px;
-  margin-bottom: 20px;
+  margin-top: 60px;
+  margin-bottom: 10px;
   padding: 6px 10px;
   font-size: 1.4rem;
   background: linear-gradient(133deg, #2fd8ca, #19a2bd) !important;
@@ -291,5 +351,26 @@
 
   &:hover {
     filter: brightness(0.6);
+  }
+}
+
+.unconnected-to-wallet-mask {
+  :global {
+    .ant-spin-dot {
+      width: 160px;
+      height: 48px;
+      line-height: 32px;
+      color: white;
+      padding: 8px 8px;
+      margin-left: -80px !important;
+      background-color: brown;
+      border-radius: 4px;
+      font-size: 16px;
+
+      &:hover {
+        filter: brightness(1.2);
+        cursor: pointer;
+      }
+    }
   }
 }
