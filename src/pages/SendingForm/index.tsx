@@ -5,14 +5,17 @@ import {
   RightOutlined,
   SwapOutlined,
   QuestionCircleOutlined,
+  DisconnectOutlined,
+  WalletOutlined,
 } from '@ant-design/icons';
 import BigNumber from 'bignumber.js';
 import TokenModal from 'components/TokenModal';
 import NetworkModal from 'components/NetworkModal';
-import wallet from 'components/Wallet';
+// import wallet from 'components/Wallet';
 import useCrossChainModel from '@/models/useCrossChain';
 import useTokensModel from '@/models/useTokens';
 import useFormDataModel from '@/models/useFormData';
+import useWalletModel from '@/models/useWallet';
 import { isAddress, checkNumber, clipString } from '@/utils/utils';
 import styles from './index.less';
 
@@ -25,11 +28,11 @@ export default function IndexPage() {
   const [validAddress, setValidAddress] = useState(true);
   const [validAmount, setValidAmount] = useState(true);
   const [assetModalVisible, setAssetModalVisible] = useState(false);
-  const [need2Connect2Wallet, setNeed2Connect2Wallet] = useState(true);
   const [networkModalVisible, setNetworkModalVisible] = useState(0); // false: 0, 'from': 1, 'to': 2
 
   const { tokens } = useTokensModel();
   const { data, modify } = useFormDataModel();
+  const wallet = useWalletModel();
   const {
     getSupportedChainByToken,
     getTokenLogo,
@@ -83,6 +86,21 @@ export default function IndexPage() {
     });
   };
 
+  const connect = () => {
+    wallet.connect();
+  };
+
+  const disconnect = () => {
+    wallet.reset();
+  };
+
+  const onConnect2Wallet = () => {
+    console.log('onConnect2Wallet - wallet:', wallet);
+    if (wallet !== null) {
+      wallet.reset().then(connect);
+    }
+  };
+
   /* useEffect(() => {
     if (!!data.from && !!data.to && checkAmount(data.amount)) {
 
@@ -114,68 +132,40 @@ export default function IndexPage() {
   }, [tokens, chains]);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      modify({
+        fromAddress: wallet.address,
+      });
+    });
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [wallet.address]);
+
+  useEffect(() => {
     connect();
   }, []);
-
-  const connect = () => {
-    if (wallet !== null) {
-      wallet
-        .connect()
-        .then((connected) => {
-          console.log('connected:', connected);
-          if (connected) {
-            modify({
-              fromAddress: wallet.address,
-            });
-          }
-          setNeed2Connect2Wallet(!connected);
-        })
-        .catch((err) => {
-          // console.log('connect failed:', err);
-          setNeed2Connect2Wallet(true);
-        });
-    }
-  };
-
-  const disconnect = () => {
-    wallet.reset().then(() => {
-      console.log('disconnect:', wallet.address);
-      setNeed2Connect2Wallet(true);
-    });
-  };
-
-  const onConnect2Wallet = () => {
-    if (wallet !== null) {
-      wallet.reset().then(connect);
-    }
-  };
 
   const menu = (
     <Menu>
       <Menu.Item onClick={disconnect}>
+        <DisconnectOutlined />
         <span>Disconnect</span>
       </Menu.Item>
       <Menu.Item onClick={onConnect2Wallet}>
+        <SwapOutlined />
         <span>Switch to other wallet</span>
       </Menu.Item>
     </Menu>
   );
-
-  console.log('render');
 
   return (
     <>
       <div className={styles['form-wrapper']}>
         <div className={styles['title']}>WAN Bridge</div>
 
-        {need2Connect2Wallet ? (
-          <div
-            className={`${styles['connection']} ${styles['connect-to-wallet']}`}
-            onClick={onConnect2Wallet}
-          >
-            Connect to Wallet
-          </div>
-        ) : (
+        {wallet.connected ? (
           <Dropdown
             overlay={menu}
             placement="bottomCenter"
@@ -184,9 +174,17 @@ export default function IndexPage() {
             <button
               className={`${styles['connection']} ${styles['connected-address']}`}
             >
+              <WalletOutlined />
               {clipString(data.fromAddress, 14)}
             </button>
           </Dropdown>
+        ) : (
+          <div
+            className={`${styles['connection']} ${styles['connect-to-wallet']}`}
+            onClick={onConnect2Wallet}
+          >
+            Connect to Wallet
+          </div>
         )}
 
         {/* Asset */}
@@ -272,7 +270,7 @@ export default function IndexPage() {
         </div>
 
         <Spin
-          spinning={need2Connect2Wallet}
+          spinning={!wallet.connected}
           wrapperClassName={styles['unconnected-to-wallet-mask']}
           indicator={<div onClick={onConnect2Wallet}>Connect to Wallet</div>}
         >

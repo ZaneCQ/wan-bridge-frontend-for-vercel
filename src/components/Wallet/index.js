@@ -35,18 +35,15 @@ const getProviderOptions = () => ({
 
 class Wallet {
   constructor() {
-    // console.log('Wallet constructor');
     this.connected = false;
     this.address = undefined;
     this.createModal();
     this.clearCacheWhenWanMaskUninstalled();
-    // console.log('this.web3Modal.cachedProvider:', this.web3Modal.cachedProvider);
-    // this.connect();
   }
 
   createModal = () => {
     this.web3Modal = new Web3Modal({
-      network: 'mainnet', // optional
+      // network: 'mainnet', // optional
       cacheProvider: true,
       providerOptions: getProviderOptions(),
     });
@@ -59,23 +56,21 @@ class Wallet {
       console.log('Failed to connect:', err);
       return false;
     }
-    console.log('----------');
     await this.subscribeProvider(this.provider);
     this.web3 = new Web3(this.provider);
     const accounts = await this.web3.eth.getAccounts();
     this.address = accounts[0];
     this.connected = true;
-    this.networkId = await this.web3.eth.net.getId();
+    this.chainId = await this.web3.eth.net.getId();
     console.log('Parameters:', {
       accounts,
       address: this.address,
-      networkId: this.networkId,
+      chainId: this.chainId,
     });
     return true;
   };
 
   reset = async () => {
-    console.log('reset:', this.web3);
     const web3 = this.web3;
     if (web3 && web3.currentProvider && web3.currentProvider.close) {
       await web3.currentProvider.close();
@@ -83,6 +78,7 @@ class Wallet {
     await this.web3Modal.clearCachedProvider();
     this.connected = false;
     this.address = undefined;
+    this.chainId = undefined;
   };
 
   clearCacheWhenWanMaskUninstalled = () => {
@@ -98,10 +94,18 @@ class Wallet {
 
     provider.on('accountsChanged', async (accounts) => {
       console.log('accountsChanged:', accounts);
+      if (accounts.length === 0) {
+        this.address = undefined;
+        this.connected = false;
+      } else {
+        this.address = accounts[0];
+        this.connected = true;
+      }
     });
 
-    provider.on('chainChanged', async (args) => {
-      console.log('chainChanged:', args);
+    provider.on('chainChanged', async (chainId) => {
+      console.log('chainChanged:', chainId);
+      this.chainId = chainId;
     });
 
     provider.on('connect', (...info) => {
@@ -110,6 +114,8 @@ class Wallet {
 
     provider.on('disconnect', (error) => {
       console.log('disconnect:', error);
+      this.address = undefined;
+      this.connected = false;
     });
   };
 }

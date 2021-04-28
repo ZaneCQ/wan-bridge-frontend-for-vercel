@@ -5,11 +5,12 @@ const useTokens = () => {
   const [tokens, setTokens] = useState([]);
   const [loading, setLoading] = useState(false);
   const getTokens = () => {
+    // console.log('~~~~~~~~~ use tokens ~~~~~~~~');
     setLoading(true);
     fetch('/api/tokens')
       .then((res) => res.json())
       .then((res) => {
-        console.log('##### tokens:', res);
+        // console.log('##### tokens:', res);
         setTokens(res);
         setLoading(false);
       })
@@ -18,6 +19,7 @@ const useTokens = () => {
         setLoading(false);
       });
   };
+
   useEffect(getTokens, []);
 
   return { tokens, getTokens, loading };

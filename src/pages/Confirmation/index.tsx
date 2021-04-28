@@ -39,7 +39,6 @@ const Confirmation = () => {
   const { data, modify } = useFormDataModel();
   const { getTokenLogo, getChainLogo } = useCrossChainModel();
   const [loading, setLoading] = useState(false);
-  // console.log('data:', data);
   if (data.step === 0) {
     history.push('/');
     return false;
@@ -62,7 +61,6 @@ const Confirmation = () => {
           <div className={styles['token-wrapper']}>
             <div className={styles['token']}>
               <img src={getTokenLogo(data.asset)} />
-              {/* {data.asset} */}
             </div>
             <div className={styles['arrow']}>
               <object data={arrow} type="image/svg+xml"></object>
