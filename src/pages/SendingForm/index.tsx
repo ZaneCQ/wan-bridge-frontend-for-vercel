@@ -11,7 +11,6 @@ import {
 import BigNumber from 'bignumber.js';
 import TokenModal from 'components/TokenModal';
 import NetworkModal from 'components/NetworkModal';
-// import wallet from 'components/Wallet';
 import useCrossChainModel from '@/models/useCrossChain';
 import useTokensModel from '@/models/useTokens';
 import useFormDataModel from '@/models/useFormData';
@@ -33,6 +32,7 @@ export default function IndexPage() {
   const { tokens } = useTokensModel();
   const { data, modify } = useFormDataModel();
   const wallet = useWalletModel();
+  const { address, connected } = wallet;
   const {
     getSupportedChainByToken,
     getTokenLogo,
@@ -134,17 +134,18 @@ export default function IndexPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       modify({
-        fromAddress: wallet.address,
+        fromAddress: address,
       });
     });
 
     return () => {
       clearTimeout(timer);
     };
-  }, [wallet.address]);
+  }, [address]);
 
   useEffect(() => {
-    connect();
+    console.log('sending render');
+    // connect();
   }, []);
 
   const menu = (
@@ -165,7 +166,7 @@ export default function IndexPage() {
       <div className={styles['form-wrapper']}>
         <div className={styles['title']}>WAN Bridge</div>
 
-        {wallet.connected ? (
+        {connected ? (
           <Dropdown
             overlay={menu}
             placement="bottomCenter"
@@ -270,7 +271,7 @@ export default function IndexPage() {
         </div>
 
         <Spin
-          spinning={!wallet.connected}
+          spinning={!connected}
           wrapperClassName={styles['unconnected-to-wallet-mask']}
           indicator={<div onClick={onConnect2Wallet}>Connect to Wallet</div>}
         >

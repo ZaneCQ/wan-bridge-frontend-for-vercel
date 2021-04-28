@@ -35,39 +35,30 @@ const getProviderOptions = () => ({
   },
 });
 
+const web3Modal = new Web3Modal({
+  cacheProvider: true,
+  providerOptions: getProviderOptions(),
+});
+
 const useWallet = () => {
   const [address, setAddress] = useState(undefined);
   const [connected, setConnected] = useState(false);
   const [web3, setWeb3] = useState(null);
-  const [provider, setProvider] = useState(null);
-  const [web3Modal, setWeb3Modal] = useState(() => {
-    return new Web3Modal({
-      cacheProvider: true,
-      providerOptions: getProviderOptions(),
-    });
-  });
 
   const connect = async () => {
-    let provider;
+    let temporaryProvider;
     try {
-      provider = await web3Modal.connect();
-      setProvider(provider);
+      temporaryProvider = await web3Modal.connect();
     } catch (err) {
       console.log('Failed to connect:', err);
       return false;
     }
-    await subscribeProvider(provider);
-    const web3 = new Web3(provider);
+    await subscribeProvider(temporaryProvider);
+    const web3 = new Web3(temporaryProvider);
     setWeb3(web3);
     const accounts = await web3.eth.getAccounts();
     setAddress(accounts[0]);
     setConnected(true);
-    /* const chainId = await web3.eth.net.getId();
-        console.log('Parameters:', {
-            accounts,
-            address: address,
-            chainId: chainId,
-        }); */
     return true;
   };
 
@@ -75,15 +66,12 @@ const useWallet = () => {
     if (web3 && web3.currentProvider && web3.currentProvider.close) {
       await web3.currentProvider.close();
     }
+
     await web3Modal.clearCachedProvider();
+
     setConnected(false);
     setAddress(undefined);
-  };
-
-  const clearCacheWhenWanMaskUninstalled = () => {
-    if (web3Modal.cachedProvider === 'wanmask' && !window.wanchain) {
-      web3Modal.clearCachedProvider();
-    }
+    console.log('result:', web3Modal, web3);
   };
 
   const subscribeProvider = async (provider) => {
@@ -106,6 +94,10 @@ const useWallet = () => {
       console.log('chainChanged:', chainId);
     });
 
+    provider.on('networkChanged', async (networkId) => {
+      console.log('networkChanged:', networkId);
+    });
+
     provider.on('connect', (...info) => {
       console.log('connect:', info);
     });
@@ -118,8 +110,17 @@ const useWallet = () => {
   };
 
   useEffect(() => {
-    if (web3Modal !== null) {
-      clearCacheWhenWanMaskUninstalled();
+    console.log('wallet render');
+
+    if (web3Modal.cachedProvider === 'wanmask' && !window.wanchain) {
+      console.log('cleared---');
+      web3Modal.clearCachedProvider();
+      return;
+    }
+
+    if (web3Modal.cachedProvider) {
+      console.log('cachedProvider~~~~~~~~', web3Modal.cachedProvider);
+      connect();
     }
   }, []);
 
@@ -135,7 +136,6 @@ const useWallet = () => {
     connected,
     web3Modal,
     web3,
-    provider,
     connect,
     reset,
   };

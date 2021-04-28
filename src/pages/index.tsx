@@ -1,4 +1,3 @@
-// import wallet from 'components/Wallet';
 import styles from './index.less';
 
 export default function IndexPage(props) {
