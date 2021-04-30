@@ -1,39 +1,16 @@
 import { useState, useEffect, Fragment } from 'react';
-import { Input, Button, Tooltip, message, Modal } from 'antd';
+import { Input, Button, Tooltip, message, Modal, Steps } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import useFormDataModel from '@/models/useFormData';
 import useCrossChainModel from '@/models/useCrossChain';
 import LoadingIcon from 'components/LoadingIcon';
 import wallet from 'components/Wallet';
+import { copy } from '@/utils/utils';
 import arrow from 'images/swap-right.svg';
 import styles from './index.less';
 
-const copy = (text) => {
-  try {
-    navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
-      if (result.state == 'granted' || result.state == 'prompt') {
-        if ('writeText' in navigator.clipboard) {
-          navigator.clipboard.writeText(text).then(
-            (data) => {
-              message.success('Copied');
-            },
-            (err) => {
-              console.debug('Failed to copy :', err);
-            },
-          );
-        } else {
-          message.warn('Failed to copy');
-        }
-      } else {
-        message.warn('Clipboard-write permission is denied by browser');
-      }
-    });
-  } catch (err) {
-    console.debug('Failed to copy :', err);
-    message.warn('Failed to copy');
-  }
-};
+const { Step } = Steps;
 
 const Confirmation = () => {
   const { data, modify } = useFormDataModel();
@@ -53,6 +30,12 @@ const Confirmation = () => {
   return (
     <Fragment>
       <div className={styles['confirm-wrapper']}>
+        <Steps current={1} className={styles['step']}>
+          <Step title="Input" />
+          <Step title="Confirm" />
+          <Step title="Finished" />
+        </Steps>
+
         <div className={styles['title']}>{data.asset} Transaction</div>
         <div className={styles['chain-pair-wrapper']}>
           <div className={styles['chain']}>
@@ -133,5 +116,5 @@ const Confirmation = () => {
     </Fragment>
   );
 };
-Confirmation;
+
 export default Confirmation;

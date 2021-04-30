@@ -1,5 +1,6 @@
 import { validate } from 'bitcoin-address-validation';
 import { isValidChecksumAddress } from 'ethereumjs-util';
+import { message } from 'antd';
 import { isValidChecksumAddress as isWanValidChecksumAddress } from 'wanchainjs-util';
 
 export const isAddress = (address, chain) => {
@@ -68,4 +69,30 @@ export const clipString = (str, len) => {
   let sufLen = len - preLen;
   text = str.substr(0, preLen) + '...' + str.substr(-sufLen);
   return text;
+};
+
+export const copy = (text) => {
+  try {
+    navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
+      if (result.state == 'granted' || result.state == 'prompt') {
+        if ('writeText' in navigator.clipboard) {
+          navigator.clipboard.writeText(text).then(
+            (data) => {
+              message.success('Copied');
+            },
+            (err) => {
+              console.debug('Failed to copy :', err);
+            },
+          );
+        } else {
+          message.warn('Failed to copy');
+        }
+      } else {
+        message.warn('Clipboard-write permission is denied by browser');
+      }
+    });
+  } catch (err) {
+    console.debug('Failed to copy :', err);
+    message.warn('Failed to copy');
+  }
 };

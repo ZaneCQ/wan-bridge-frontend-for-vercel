@@ -22,6 +22,7 @@ export default defineConfig({
       routes: [
         { path: '/', component: 'SendingForm' },
         { path: '/confirm', component: 'Confirmation' },
+        { path: '/xrp', component: 'XRPConfirmation' },
       ],
     },
   ],

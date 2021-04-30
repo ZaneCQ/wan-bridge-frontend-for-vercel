@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createModel } from 'hox';
 
-const initialFormData = {
+/* const initialFormData = {
   asset: null,
   from: null,
   to: null,
@@ -10,9 +10,9 @@ const initialFormData = {
   amount: '0',
   fee: '0',
   step: 1, // step 0: sending form, step 1: confirmation
-};
+}; */
 
-/* const initialFormData = {
+const initialFormData = {
   asset: 'WAN',
   from: 'Wanchain',
   to: 'Ethereum',
@@ -21,7 +21,7 @@ const initialFormData = {
   amount: '100',
   fee: '0.3',
   step: 1, // step 0: sending form, step 1: confirmation
-}; */
+};
 
 const useFormData = (initial) => {
   const [values, setValues] = useState(() => initial);

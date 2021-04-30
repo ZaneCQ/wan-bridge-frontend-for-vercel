@@ -42,6 +42,7 @@ const web3Modal = new Web3Modal({
 
 const useWallet = () => {
   const [address, setAddress] = useState(undefined);
+  const [balance, setBalance] = useState(0);
   const [connected, setConnected] = useState(false);
   const [web3, setWeb3] = useState(null);
 
@@ -59,8 +60,26 @@ const useWallet = () => {
     const accounts = await web3.eth.getAccounts();
     setAddress(accounts[0]);
     setConnected(true);
+
+    getBalance();
     return true;
   };
+
+  const getBalance = async () => {
+    if (web3 === null || address === undefined) {
+      return;
+    }
+    const balance = await web3.eth.getBalance(address);
+    const ethBalance = web3.utils.fromWei(balance, 'ether');
+    // console.log('balance:', balance, ethBalance);
+    setBalance(balance);
+    // console.log('ethBalance:', ethBalance);
+  };
+
+  useEffect(() => {
+    // console.log('addddddddddddddddd', address, web3);
+    getBalance();
+  }, [address /* , web3 */]);
 
   const reset = async () => {
     if (web3 && web3.currentProvider && web3.currentProvider.close) {
@@ -71,7 +90,6 @@ const useWallet = () => {
 
     setConnected(false);
     setAddress(undefined);
-    console.log('result:', web3Modal, web3);
   };
 
   const subscribeProvider = async (provider) => {
@@ -84,9 +102,11 @@ const useWallet = () => {
       if (accounts.length === 0) {
         setAddress(undefined);
         setConnected(false);
+        setBalance(0);
       } else {
         setAddress(accounts[0]);
         setConnected(true);
+        getBalance();
       }
     });
 
@@ -110,7 +130,7 @@ const useWallet = () => {
   };
 
   useEffect(() => {
-    console.log('wallet render');
+    // console.log('wallet render');
 
     if (web3Modal.cachedProvider === 'wanmask' && !window.wanchain) {
       console.log('cleared---');
@@ -119,20 +139,22 @@ const useWallet = () => {
     }
 
     if (web3Modal.cachedProvider) {
-      console.log('cachedProvider~~~~~~~~', web3Modal.cachedProvider);
+      // console.log('cachedProvider~~~~~~~~', web3Modal.cachedProvider);
       connect();
     }
   }, []);
 
-  console.log({
+  /* console.log({
     address,
     connected,
     connect,
     reset,
-  });
+    balance
+  }); */
 
   return {
     address,
+    balance,
     connected,
     web3Modal,
     web3,

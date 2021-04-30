@@ -8,6 +8,20 @@
   color: white;
 }
 
+.step {
+  margin-bottom: 20px;
+
+  :global {
+    .ant-steps-item-title {
+      color: #ffffff !important;
+    }
+
+    .ant-steps-item-active .ant-steps-item-title {
+      color: #1890ff !important;
+    }
+  }
+}
+
 .title {
   text-align: center;
   color: white;
@@ -75,8 +89,8 @@
   margin-top: 24px;
   padding: 10px 10px 2px 0px;
   color: #bdbdbd;
-  font-weight: 600;
-  font-size: 1.6rem;
+  font-weight: 400;
+  font-size: 1.4rem;
 }
 
 .address-wrapper {
