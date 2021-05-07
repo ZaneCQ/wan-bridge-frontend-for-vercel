@@ -23,6 +23,7 @@ export default defineConfig({
         { path: '/', component: 'SendingForm' },
         { path: '/confirm', component: 'Confirmation' },
         { path: '/xrp', component: 'XRPConfirmation' },
+        { path: '/btc', component: 'BTCConfirmation' },
       ],
     },
   ],

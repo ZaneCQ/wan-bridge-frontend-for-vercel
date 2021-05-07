@@ -35,6 +35,10 @@ export default {
     }, */
 
   '/api/tokens': Object.keys(tokens),
-  '/api/tokens/hot': ['WAN', 'BTC', 'ETH', 'FNX', 'USDT'],
+  '/api/tokens/hot': ['WAN', 'BTC', 'ETH', 'XRP', 'USDT'],
   '/api/tokens/cross-chain': tokens,
+  '/api/xrp/address': { data: '0x00000000000000000000000000000' },
+  '/api/xrp/tag': { data: '110' },
+  '/api/btc/address': { data: '0x00000000000000000000000000011' },
+  '/api/btc/tag': { data: '8' },
 };

@@ -77,9 +77,8 @@ const useWallet = () => {
   };
 
   useEffect(() => {
-    // console.log('addddddddddddddddd', address, web3);
     getBalance();
-  }, [address /* , web3 */]);
+  }, [address]);
 
   const reset = async () => {
     if (web3 && web3.currentProvider && web3.currentProvider.close) {
@@ -139,7 +138,6 @@ const useWallet = () => {
     }
 
     if (web3Modal.cachedProvider) {
-      // console.log('cachedProvider~~~~~~~~', web3Modal.cachedProvider);
       connect();
     }
   }, []);

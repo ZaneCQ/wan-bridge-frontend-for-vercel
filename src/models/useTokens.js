@@ -5,7 +5,6 @@ const useTokens = () => {
   const [tokens, setTokens] = useState([]);
   const [loading, setLoading] = useState(false);
   const getTokens = () => {
-    // console.log('~~~~~~~~~ use tokens ~~~~~~~~');
     setLoading(true);
     fetch('/api/tokens')
       .then((res) => res.json())

@@ -1,3 +1,6 @@
+@button-color: linear-gradient(133deg, #2fd8ca, #19a2bd);
+@connect-button-color: brown;
+
 .form-wrapper {
   width: 560px;
   min-height: 560px;
@@ -55,7 +58,7 @@
 
 .connect-to-wallet {
   color: white;
-  background-color: brown;
+  background-color: @connect-button-color;
 }
 
 .connected-address {
@@ -353,34 +356,31 @@
   margin-bottom: 10px;
   padding: 6px 10px;
   font-size: 1.4rem;
-  background: linear-gradient(133deg, #2fd8ca, #19a2bd) !important;
+  background: @button-color !important;
   border: none;
   color: white !important;
   text-transform: uppercase;
 
   &:hover {
+    background: @button-color;
     filter: brightness(0.6);
   }
 }
 
-.unconnected-to-wallet-mask {
-  :global {
-    .ant-spin-dot {
-      width: 200px;
-      height: 36px;
-      line-height: 24px;
-      color: white;
-      padding: 6px 10px;
-      margin-left: -100px !important;
-      margin-top: -18px !important;
-      background-color: brown;
-      border-radius: 6px;
-      font-size: 16px;
+.connect-button {
+  width: 100%;
+  height: auto;
+  margin-top: 60px;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  font-size: 1.4rem;
+  background: @connect-button-color !important;
+  border: none;
+  color: white !important;
+  text-transform: uppercase;
 
-      &:hover {
-        filter: brightness(1.2);
-        cursor: pointer;
-      }
-    }
+  &:hover {
+    background: @connect-button-color;
+    filter: brightness(0.6);
   }
 }

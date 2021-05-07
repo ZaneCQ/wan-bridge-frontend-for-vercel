@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Input, Button, Tooltip, Spin, Dropdown, Menu, message } from 'antd';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Input, Button, Tooltip, Dropdown, Menu, message } from 'antd';
 import { history } from 'umi';
 import {
   RightOutlined,
@@ -28,10 +28,11 @@ export default function IndexPage() {
   const [validAmount, setValidAmount] = useState(true);
   const [assetModalVisible, setAssetModalVisible] = useState(false);
   const [networkModalVisible, setNetworkModalVisible] = useState(0); // false: 0, 'from': 1, 'to': 2
-
   const { tokens } = useTokensModel();
   const { data, modify } = useFormDataModel();
   const wallet = useWalletModel();
+  // console.log('wallet:', wallet);
+  // console.log('data:', data);
   const { address, connected } = wallet;
   const {
     getSupportedChainByToken,
@@ -39,13 +40,47 @@ export default function IndexPage() {
     getChainLogo,
     chains,
   } = useCrossChainModel();
-  const balance = 10;
+  const balance = 1000;
+  const isBTC = useMemo(() => data.asset === 'BTC' && data.from === 'Bitcoin', [
+    data.asset,
+    data.from,
+  ]);
+  const isXRP = useMemo(() => data.asset === 'XRP', [data.asset]);
 
-  const checkAddress = (value) => {
-    if (isAddress(value, data.to)) {
-      setValidAddress(true);
+  const checkAddress = useCallback(
+    (value) => {
+      // console.log('address:', value)
+      if (isAddress(value, data.to)) {
+        setValidAddress(true);
+        return true;
+      } else {
+        setValidAddress(false);
+        return false;
+      }
+    },
+    [data.to],
+  );
+
+  const checkAmount = (value) => {
+    const isValid = checkNumber(value) && new BigNumber(value).lte(balance);
+    setValidAmount(isValid);
+    return isValid;
+  };
+
+  const checkAll = () => {
+    if (
+      checkAddress(data.toAddress) &&
+      checkAmount(data.amount) &&
+      typeof data.asset === 'string' &&
+      data.asset.length > 0 &&
+      typeof data.from === 'string' &&
+      data.from.length > 0 &&
+      typeof data.to === 'string' &&
+      data.to.length > 0
+    ) {
+      return true;
     } else {
-      setValidAddress(false);
+      return false;
     }
   };
 
@@ -57,12 +92,6 @@ export default function IndexPage() {
     });
   };
 
-  const checkAmount = (value) => {
-    const isValid = checkNumber(value) && new BigNumber(value).lte(balance);
-    setValidAmount(isValid);
-    return isValid;
-  };
-
   const amountChange = (e) => {
     const value = e.target.value;
     const isValid = checkAmount(value);
@@ -72,17 +101,11 @@ export default function IndexPage() {
     });
   };
 
-  const onNext = () => {
-    console.log('Form next:', data);
-    console.log('wallet:', wallet);
-    history.push('/confirm');
-  };
-
   const onExchange = () => {
     modify({
       from: data.to,
       to: data.from,
-      toAddress: '',
+      // toAddress: '',
     });
   };
 
@@ -101,11 +124,20 @@ export default function IndexPage() {
     }
   };
 
-  /* useEffect(() => {
-    if (!!data.from && !!data.to && checkAmount(data.amount)) {
-
+  const onNext = () => {
+    console.log('Form next:', data);
+    console.log('wallet:', wallet);
+    if (checkAll()) {
+      history.push('/confirm');
+    } else {
+      message.warning('Invalid form data!');
     }
-  }, [data.asset, data.from, data.to, data.amount, data.toAddress]); */
+  };
+
+  /* useEffect(() => {
+    console.log('step:', data.step);
+    history.push('/');
+  }, [data.step]); */
 
   useEffect(() => {
     if (data.from !== null) {
@@ -114,6 +146,12 @@ export default function IndexPage() {
       setToDisabled(true);
     }
   }, [data.from]);
+
+  useEffect(() => {
+    if (typeof data.toAddress === 'string' && data.toAddress.length !== 0) {
+      checkAddress(data.toAddress);
+    }
+  }, [data.to]);
 
   // Initialize form data.
   useEffect(() => {
@@ -143,10 +181,10 @@ export default function IndexPage() {
     };
   }, [address]);
 
-  useEffect(() => {
-    console.log('sending render');
+  /* useEffect(() => {
+    // console.log('sending render');
     // connect();
-  }, []);
+  }, []); */
 
   const menu = (
     <Menu>
@@ -160,6 +198,8 @@ export default function IndexPage() {
       </Menu.Item>
     </Menu>
   );
+
+  // console.log('Index render');
 
   return (
     <>
@@ -270,47 +310,50 @@ export default function IndexPage() {
           )}
         </div>
 
-        <Spin
-          spinning={!connected}
-          wrapperClassName={styles['unconnected-to-wallet-mask']}
-          indicator={<div onClick={onConnect2Wallet}>Connect to Wallet</div>}
-        >
-          {/* Amount */}
-          <div className={styles['amount-wrapper']}>
-            <div className={`${styles['amount-label']} label`}>Amount</div>
-            <div className={styles['amount-input-wrapper']}>
-              <Input onChange={amountChange} value={data.amount} />
-            </div>
-            {!validAmount && (
-              <div className={styles['error-text']}>{'Invalid amount.'}</div>
-            )}
+        {/* Amount */}
+        <div className={styles['amount-wrapper']}>
+          <div className={`${styles['amount-label']} label`}>Amount</div>
+          <div className={styles['amount-input-wrapper']}>
+            <Input onChange={amountChange} value={data.amount} />
+          </div>
+          {!validAmount && (
+            <div className={styles['error-text']}>{'Invalid amount.'}</div>
+          )}
 
-            <div className={styles['balance-wrapper']}>
-              <span className={'label'}>Balance:</span>
-              <span className={'value'}>
-                {balance} {data.asset}
-              </span>
-            </div>
-
-            <div className={styles['fee-wrapper']}>
-              <div>
-                <span className={'label'}>Fee</span>
-                <Tooltip title={`Operation Fee: ${data.fee} ${data.asset}`}>
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </div>
-              <div>
-                {data.fee}
-                <img src={getTokenLogo(data.asset)} />
-                {data.asset}
-              </div>
-            </div>
+          <div className={styles['balance-wrapper']}>
+            <span className={'label'}>Balance:</span>
+            <span className={'value'}>
+              {balance} {data.asset}
+            </span>
           </div>
 
+          <div className={styles['fee-wrapper']}>
+            <div>
+              <span className={'label'}>Fee</span>
+              <Tooltip title={`Operation Fee: ${data.fee} ${data.asset}`}>
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </div>
+            <div>
+              {data.fee}
+              <img src={getTokenLogo(data.asset)} />
+              {data.asset}
+            </div>
+          </div>
+        </div>
+
+        {!connected && !isBTC && !isXRP ? (
+          <Button
+            className={styles['connect-button']}
+            onClick={onConnect2Wallet}
+          >
+            Connect to Wallet
+          </Button>
+        ) : (
           <Button className={styles['next-button']} onClick={onNext}>
             Next
           </Button>
-        </Spin>
+        )}
       </div>
 
       {assetModalVisible && (

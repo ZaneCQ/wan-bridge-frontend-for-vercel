@@ -1,41 +1,44 @@
-import { useState, useEffect, Fragment } from 'react';
-import { Input, Button, Tooltip, message, Modal, Steps } from 'antd';
+import { useState, useEffect, useMemo, Fragment } from 'react';
+import { Input, Button, Tooltip, message, Modal } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import useFormDataModel from '@/models/useFormData';
 import useCrossChainModel from '@/models/useCrossChain';
 import LoadingIcon from 'components/LoadingIcon';
-import wallet from 'components/Wallet';
 import { copy } from '@/utils/utils';
 import arrow from 'images/swap-right.svg';
 import styles from './index.less';
-
-const { Step } = Steps;
 
 const Confirmation = () => {
   const { data, modify } = useFormDataModel();
   const { getTokenLogo, getChainLogo } = useCrossChainModel();
   const [loading, setLoading] = useState(false);
-  if (data.step === 0) {
+  /* if (data.step === 0) {
     history.push('/');
     return false;
-  }
-
-  const onCancel = () => {};
+  } */
+  const isBTC = useMemo(() => data.asset === 'BTC' && data.from === 'Bitcoin', [
+    data.asset,
+    data.from,
+  ]);
+  const isXRP = useMemo(() => data.asset === 'XRP', [data.asset]);
+  const onCancel = () => {
+    history.push('/');
+  };
   const onOK = () => {
     console.log('submit:', data);
     setLoading(true);
+    if (isBTC) {
+      history.push('/btc');
+    }
+    if (isXRP) {
+      history.push('/xrp');
+    }
   };
 
   return (
     <Fragment>
       <div className={styles['confirm-wrapper']}>
-        <Steps current={1} className={styles['step']}>
-          <Step title="Input" />
-          <Step title="Confirm" />
-          <Step title="Finished" />
-        </Steps>
-
         <div className={styles['title']}>{data.asset} Transaction</div>
         <div className={styles['chain-pair-wrapper']}>
           <div className={styles['chain']}>
@@ -54,16 +57,20 @@ const Confirmation = () => {
           </div>
         </div>
 
-        <div className={styles['label']}>From</div>
-        <div className={styles['address-wrapper']}>
-          <div>{data.fromAddress}</div>
-          <CopyOutlined
-            className={styles['copy-icon']}
-            onClick={() => {
-              copy(data.fromAddress);
-            }}
-          />
-        </div>
+        {!(isBTC || isXRP) && (
+          <>
+            <div className={styles['label']}>From</div>
+            <div className={styles['address-wrapper']}>
+              <div>{data.fromAddress}</div>
+              <CopyOutlined
+                className={styles['copy-icon']}
+                onClick={() => {
+                  copy(data.fromAddress);
+                }}
+              />
+            </div>
+          </>
+        )}
 
         <div className={styles['label']}>To</div>
         <div className={styles['address-wrapper']}>
