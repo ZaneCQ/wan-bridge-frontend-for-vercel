@@ -22,7 +22,7 @@ const FALSE = 0;
 const FROM = 1;
 const TO = 2;
 
-export default function IndexPage() {
+export default function IndexPage(props) {
   const [toDisabled, setToDisabled] = useState(true);
   const [validAddress, setValidAddress] = useState(true);
   const [validAmount, setValidAmount] = useState(true);

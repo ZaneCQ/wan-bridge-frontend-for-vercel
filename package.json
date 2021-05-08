@@ -48,6 +48,7 @@
     "@umijs/test": "^3.4.8",
     "cross-env": "^7.0.3",
     "lint-staged": "^10.0.7",
+    "mockjs": "^1.1.0",
     "prettier": "^2.2.0",
     "yorkie": "^2.0.0"
   }

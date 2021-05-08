@@ -24,6 +24,7 @@ export default defineConfig({
         { path: '/confirm', component: 'Confirmation' },
         { path: '/xrp', component: 'XRPConfirmation' },
         { path: '/btc', component: 'BTCConfirmation' },
+        { path: '/history', component: 'History' },
       ],
     },
   ],

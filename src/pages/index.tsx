@@ -1,5 +1,12 @@
+import Header from 'components/Header';
 import styles from './index.less';
 
 export default function IndexPage(props) {
-  return <div className={styles['main-container']}>{props.children}</div>;
+  // console.log('props:', props);
+  return (
+    <div className={styles['main-container']}>
+      <Header url={props.history.location.pathname} />
+      {props.children}
+    </div>
+  );
 }

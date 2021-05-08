@@ -6,20 +6,16 @@ p {
   width: 100%;
   height: 100%;
   position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
   padding: 48px 0px 48px 0px;
   overflow: auto;
+
+  & > * {
+    margin: auto;
+  }
 
   :global {
     .label {
       user-select: none;
     }
-  }
-
-  @media screen and (max-height: 820px) {
-    align-items: flex-start;
   }
 }
