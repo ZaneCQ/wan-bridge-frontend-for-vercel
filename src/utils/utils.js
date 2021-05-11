@@ -4,8 +4,8 @@ import { message } from 'antd';
 import { isValidChecksumAddress as isWanValidChecksumAddress } from 'wanchainjs-util';
 
 export const isAddress = (address, chain) => {
+  // console.log('check address:', address, chain);
   if (!address || address.length < 34) {
-    // console.log(`length < 34`);
     return false;
   }
   if (chain === 'Ethereum' || chain === 'BSC') {

@@ -1,4 +1,5 @@
 import Header from 'components/Header';
+import Footer from 'components/Footer';
 import styles from './index.less';
 
 export default function IndexPage(props) {
@@ -7,6 +8,7 @@ export default function IndexPage(props) {
     <div className={styles['main-container']}>
       <Header url={props.history.location.pathname} />
       {props.children}
+      <Footer />
     </div>
   );
 }

@@ -42,7 +42,7 @@ const History = () => {
                   >
                     <td className={styles['text-center']}>{item.time}</td>
 
-                    <td className={styles['text-left']}>
+                    <td className={styles['text-center']}>
                       <img
                         className={styles['token-logo']}
                         src={getTokenLogo(item.asset)}

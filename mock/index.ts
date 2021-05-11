@@ -60,7 +60,7 @@ export default {
   '/api/btc/address': { data: '0x00000000000000000000000000011' },
   '/api/btc/tag': { data: '8' },
   '/api/history/list': mockjs.mock({
-    'list|40': [
+    'list|16': [
       {
         'key|+1': 0,
         asset: '@tokens',
