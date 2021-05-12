@@ -103,6 +103,7 @@ const XRPConfirmation = () => {
         width={360}
       >
         <QRCode value={address} size={240} />
+        <div className={styles['QR-value']}>{address}</div>
       </Modal>
     </div>
   );

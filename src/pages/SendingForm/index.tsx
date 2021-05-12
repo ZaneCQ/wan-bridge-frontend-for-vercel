@@ -49,7 +49,6 @@ export default function IndexPage(props) {
 
   const checkAddress = useCallback(
     (value) => {
-      // console.log('address:', value)
       if (isAddress(value, data.to)) {
         setValidAddress(true);
         return true;
