@@ -6,7 +6,7 @@ const useTokens = () => {
   const [loading, setLoading] = useState(false);
   const getTokens = () => {
     setLoading(true);
-    fetch('/api/tokens')
+    fetch('https://wan-bridge-frontend-server-for-vercel.vercel.app/api/tokens')
       .then((res) => res.json())
       .then((res) => {
         // console.log('##### tokens:', res);

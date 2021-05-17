@@ -4,7 +4,9 @@ import { createModel } from 'hox';
 const useHistory = () => {
   const [list, setList] = useState([]);
   const getList = () => {
-    fetch('/api/history/list')
+    fetch(
+      'https://wan-bridge-frontend-server-for-vercel.vercel.app/api/history/list',
+    )
       .then((res) => {
         return res.json();
       })

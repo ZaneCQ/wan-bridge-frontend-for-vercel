@@ -4,7 +4,9 @@ import { createModel } from 'hox';
 const useBTC = () => {
   const [address, setAddress] = useState('');
   const getData = () => {
-    fetch('/api/btc/address')
+    fetch(
+      'https://wan-bridge-frontend-server-for-vercel.vercel.app/api/btc/address',
+    )
       .then((res) => res.json())
       .then((res) => {
         // console.log('##### address:', res);

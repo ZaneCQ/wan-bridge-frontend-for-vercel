@@ -4,7 +4,9 @@ import { createModel } from 'hox';
 const useHotTokens = () => {
   const [tokens, setTokens] = useState([]);
   useEffect(() => {
-    fetch('/api/tokens/hot')
+    fetch(
+      'https://wan-bridge-frontend-server-for-vercel.vercel.app/api/tokens/hot',
+    )
       .then((res) => res.json())
       .then((res) => {
         // console.log('##### hot tokens:', res);

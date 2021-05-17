@@ -5,7 +5,9 @@ const useXRP = () => {
   const [address, setAddress] = useState('');
   const [tag, setTag] = useState('');
   const getData = () => {
-    fetch('/api/xrp/address')
+    fetch(
+      'https://wan-bridge-frontend-server-for-vercel.vercel.app/api/xrp/address',
+    )
       .then((res) => res.json())
       .then((res) => {
         // console.log('##### address:', res);
@@ -15,7 +17,9 @@ const useXRP = () => {
         console.log('failed to fetch address:', err);
       });
 
-    fetch('/api/xrp/tag')
+    fetch(
+      'https://wan-bridge-frontend-server-for-vercel.vercel.app/api/xrp/tag',
+    )
       .then((res) => res.json())
       .then((res) => {
         // console.log('##### tag:', res);

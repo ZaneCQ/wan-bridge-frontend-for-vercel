@@ -12,7 +12,9 @@ import ocean from 'images/ocean.png';
 const useCrossChain = () => {
   const [tokens, setTokens] = useState([]);
   const doFetch = () => {
-    fetch('/api/tokens/cross-chain')
+    fetch(
+      'https://wan-bridge-frontend-server-for-vercel.vercel.app/api/tokens/cross-chain',
+    )
       .then((res) => res.json())
       .then((res) => {
         // console.log('##### CC:', res);
